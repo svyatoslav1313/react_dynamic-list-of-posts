@@ -38,16 +38,27 @@ export const NewCommentForm: React.FC<Props> = ({
       data-cy="NewCommentForm"
       onSubmit={event => {
         event.preventDefault();
-        setHasNameError(!name);
-        setHasEmailError(!email);
-        setHasBodyError(!body);
 
-        if (!name || !email || !body) {
+        const nameT = name.trim();
+        const emailT = email.trim();
+        const bodyT = body.trim();
+
+        setHasNameError(!nameT);
+        setHasEmailError(!emailT);
+        setHasBodyError(!bodyT);
+
+        if (!nameT || !emailT || !bodyT) {
           return;
         }
 
         if (post) {
-          onSubmitComments({ name, email, body, id: 0, postId: post.id });
+          onSubmitComments({
+            name: nameT,
+            email: emailT,
+            body: bodyT,
+            id: 0,
+            postId: post.id,
+          });
         }
 
         setBody('');
@@ -66,7 +77,10 @@ export const NewCommentForm: React.FC<Props> = ({
           <input
             type="text"
             value={name}
-            onChange={event => setName(event.target.value)}
+            onChange={event => {
+              setHasNameError(false);
+              setName(event.target.value);
+            }}
             name="name"
             id="comment-author-name"
             placeholder="Name Surname"
@@ -105,7 +119,10 @@ export const NewCommentForm: React.FC<Props> = ({
           <input
             type="text"
             value={email}
-            onChange={event => setEmail(event.target.value)}
+            onChange={event => {
+              setHasEmailError(false);
+              setEmail(event.target.value);
+            }}
             name="email"
             id="comment-author-email"
             placeholder="email@test.com"
@@ -144,7 +161,10 @@ export const NewCommentForm: React.FC<Props> = ({
           <textarea
             id="comment-body"
             value={body}
-            onChange={event => setBody(event.target.value)}
+            onChange={event => {
+              setHasBodyError(false);
+              setBody(event.target.value);
+            }}
             name="body"
             placeholder="Type comment here"
             className={classNames('textarea', {

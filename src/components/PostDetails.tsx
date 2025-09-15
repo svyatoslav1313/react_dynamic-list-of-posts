@@ -101,7 +101,7 @@ export const PostDetails: React.FC<Props> = ({
           )}
         </div>
 
-        {!commentLoading && writeComment && (
+        {!commentLoading && writeComment && !commentLoadingError && (
           <NewCommentForm
             post={post}
             onSubmitComments={onSubmitComments}

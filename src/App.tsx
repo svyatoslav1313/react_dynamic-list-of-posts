@@ -53,11 +53,13 @@ export const App = () => {
   };
 
   const handleDeleteComments = (comment: Comment) => {
+    const prevComments = comments;
+
     setComments(currentComments =>
       currentComments.filter(com => com.id !== comment.id),
     );
 
-    deleteComments(comment.id).catch(() => setComments(comments));
+    deleteComments(comment.id).catch(() => setComments(prevComments));
   };
 
   const handleSubmitComments = (newComment: Comment) => {
@@ -69,6 +71,7 @@ export const App = () => {
       .then(nComment => {
         setComments(currentComments => [...currentComments, nComment]);
       })
+      .catch(() => setCommentLoadingError(true))
       .finally(() => setSubmitLoading(false));
   };
 
