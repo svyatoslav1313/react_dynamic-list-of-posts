@@ -7,12 +7,16 @@ type Props = {
   post: Post | null;
   onSubmitComments: (comment: Comment) => void;
   submitLoading: boolean;
+  addCommentError: boolean;
+  lastCommentPayload: Omit<Comment, 'id'> | null;
 };
 
 export const NewCommentForm: React.FC<Props> = ({
   post,
   onSubmitComments,
   submitLoading,
+  addCommentError,
+  lastCommentPayload,
 }) => {
   const [name, setName] = useState('');
   const [hasNameError, setHasNameError] = useState(false);
@@ -61,7 +65,9 @@ export const NewCommentForm: React.FC<Props> = ({
           });
         }
 
-        setBody('');
+        if (!addCommentError) {
+          setBody('');
+        }
 
         setHasNameError(false);
         setHasEmailError(false);
@@ -202,6 +208,14 @@ export const NewCommentForm: React.FC<Props> = ({
             Clear
           </button>
         </div>
+        {addCommentError && lastCommentPayload && (
+          <div className="control">
+            {/* eslint-disable-next-line react/button-has-type */}
+            <button type="button" className="button is-link is-light">
+              Retry
+            </button>
+          </div>
+        )}
       </div>
     </form>
   );

@@ -27,6 +27,9 @@ export const App = () => {
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentLoadingError, setCommentLoadingError] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [addCommentError, setAddCommentError] = useState(false);
+  const [lastCommentPayload, setLastCommentPayload] = useState<Omit<Comment, 'id'> | null>(null);
+
 
   useEffect(() => {
     getUsers().then(u => setUsers(u));
@@ -53,7 +56,7 @@ export const App = () => {
   };
 
   const handleDeleteComments = (comment: Comment) => {
-    const prevComments = comments;
+    const prevComments = [...comments];
 
     setComments(currentComments =>
       currentComments.filter(com => com.id !== comment.id),
@@ -62,17 +65,27 @@ export const App = () => {
     deleteComments(comment.id).catch(() => setComments(prevComments));
   };
 
-  const handleSubmitComments = (newComment: Comment) => {
+  const handleSubmitComments = async (newComment: Comment) => {
     const { postId, name, email, body } = newComment;
 
     setSubmitLoading(true);
 
-    createComments({ id: 0, postId, name, email, body })
-      .then(nComment => {
-        setComments(currentComments => [...currentComments, nComment]);
-      })
-      .catch(() => setCommentLoadingError(true))
-      .finally(() => setSubmitLoading(false));
+    try {
+      const createdComment = await createComments({
+        id: 0,
+        name,
+        email,
+        body,
+        postId,
+      });
+
+      setComments(currentComments => [...currentComments, createdComment]);
+      setLastCommentPayload(null);
+    } catch {
+      setAddCommentError(true);
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
   return (
@@ -150,6 +163,8 @@ export const App = () => {
                   onDeleteComments={handleDeleteComments}
                   onSubmitComments={handleSubmitComments}
                   submitLoading={submitLoading}
+                  addCommentError={addCommentError}
+                  lastCommentPayload={lastCommentPayload}
                 />
               )}
             </div>
